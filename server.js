@@ -37,6 +37,7 @@ const upload = multer({ storage });
 // --- 2. MIDDLEWARE ---
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(uploadDir));
 app.use(express.static(__dirname));
 
@@ -62,9 +63,13 @@ const connectDB = async () => {
   return isConnecting;
 };
 
-// Ensure database connection is ready for every request
+// Only require database for API routes (never block static HTML files)
+const isApiRoute = (p) => {
+  return p.startsWith('/api') || p === '/login' || p === '/register' || p === '/students' || p.startsWith('/attendance') || p === '/import-students';
+};
+
 app.use(async (req, res, next) => {
-  if (req.path === '/health') return next();
+  if (!isApiRoute(req.path)) return next();
   try {
     await connectDB();
     next();
@@ -522,14 +527,32 @@ app.get('/api/student-marks/:uId', async (req, res) => {
 });
 
 // --- HTML PAGE ROUTES FOR VERCEL & LOCAL ---
+const findHtmlFile = (fileName) => {
+  const possible = [
+    path.join(__dirname, 'public', fileName),
+    path.join(__dirname, fileName),
+    path.join(process.cwd(), 'public', fileName),
+    path.join(process.cwd(), fileName)
+  ];
+  for (const p of possible) {
+    if (fs.existsSync(p)) return p;
+  }
+  return null;
+};
+
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  const f = findHtmlFile('index.html');
+  if (f) return res.sendFile(f);
+  res.status(404).send('index.html not found');
 });
 
 const pages = ['index', 'teachers', 'student', 'edutrack', 'register', 'import', 'about', 'services', 'contact'];
 pages.forEach(page => {
-  app.get(`/${page}.html`, (req, res) => res.sendFile(path.join(__dirname, `${page}.html`)));
-  app.get(`/${page}`, (req, res) => res.sendFile(path.join(__dirname, `${page}.html`)));
+  app.get([`/${page}.html`, `/${page}`], (req, res) => {
+    const f = findHtmlFile(`${page}.html`);
+    if (f) return res.sendFile(f);
+    res.status(404).send(`${page}.html not found`);
+  });
 });
 
 // --- 6. SERVER INITIALIZATION & EXPORT ---

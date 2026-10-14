@@ -1,10 +1,5 @@
 {
   "version": 2,
-  "functions": {
-    "api/index.js": {
-      "includeFiles": "*.html"
-    }
-  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/login", "destination": "/api" },
@@ -12,7 +7,6 @@
     { "source": "/students", "destination": "/api" },
     { "source": "/import-students", "destination": "/api" },
     { "source": "/attendance/(.*)", "destination": "/api" },
-    { "source": "/health", "destination": "/api" },
-    { "source": "/(.*)", "destination": "/api" }
+    { "source": "/health", "destination": "/api" }
   ]
 }

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mass Enrollment | NEXUS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --brand: #6366f1;
+            --brand-glow: rgba(99, 102, 241, 0.35);
+            --bg: #0b0f19;
+            --card: #151d30;
+            --accent: #27354f;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 45%);
+        }
+
+        .card {
+            background: var(--card);
+            padding: 45px 35px;
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 13px 16px;
+            margin: 8px 0;
+            background: #0d1322;
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px dashed var(--accent);
+            border-radius: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .btn-import {
+            background: var(--brand);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: 800;
+            font-size: 15px;
+            cursor: pointer;
+            transition: 0.25s;
+            box-shadow: 0 8px 20px var(--brand-glow);
+            margin-top: 10px;
+        }
+
+        .btn-import:hover {
+            filter: brightness(1.15);
+            transform: translateY(-2px);
+        }
+
+        .btn-sample {
+            background: transparent;
+            color: var(--brand);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 15px;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-sample:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <span style="font-size: 42px; display: block; margin-bottom: 12px;">👥</span>
+        <h2>Mass Student Enrollment</h2>
+        <p style="color:var(--text-muted); font-size:13.5px; margin: 10px 0 20px; line-height: 1.5;">
+            Upload student roster CSV with columns:<br>
+            <code>name, uniqueId, degree, semester, section</code>
+        </p>
+
+        <input type="text" id="uid" placeholder="Faculty Unique ID">
+        <input type="password" id="psw" placeholder="Faculty Password">
+        <input type="file" id="csvFile" accept=".csv">
+
+        <button class="btn-import" id="uploadBtn">Upload & Enroll Students</button>
+
+        <div>
+            <a href="javascript:void(0)" onclick="downloadSample()" class="btn-sample">📥 Download Sample CSV
+                Template</a>
+        </div>
+
+        <a href="teachers.html"
+            style="display:block; margin-top:22px; color:var(--text-muted); text-decoration:none; font-size:13.5px; font-weight:600;">
+            ← Return to Faculty Command
+        </a>
+    </div>
+
+    <script>
+        function downloadSample() {
+            const csv = "data:text/csv;charset=utf-8,name,uniqueId,degree,semester,section\nStudent One,BCA2026001,BCA,1,A\nStudent Two,BCA2026002,BCA,1,A";
+            const link = document.createElement("a");
+            link.href = encodeURI(csv);
+            link.download = "nexus_student_enrollment_template.csv";
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
+        document.getElementById('uploadBtn').onclick = async () => {
+            const fileInput = document.getElementById('csvFile');
+            const uid = document.getElementById('uid').value.trim();
+            const psw = document.getElementById('psw').value;
+
+            if (!uid || !psw) return alert("Please provide Faculty Unique ID and Password.");
+            if (!fileInput.files[0]) return alert("Please select a CSV file.");
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('uniqueId', uid);
+            formData.append('password', psw);
+
+            try {
+                const res = await fetch('/import-students', {
+                    method: 'POST',
+                    headers: { 'uniqueid': uid, 'password': psw },
+                    body: formData
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    alert("✅ " + result.message);
+                    fileInput.value = '';
+                } else {
+                    alert("❌ " + (result.error || "Import failed."));
+                }
+            } catch (err) {
+                alert("⚠️ Network connection failed.");
+            }
+        };
+    </script>
+</body>
+
+</html>
