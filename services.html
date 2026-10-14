@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Services | NEXUS </title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --brand: #6366f1; 
+            --bg: #0f172a; 
+            --card: #1e293b; 
+            --accent: #334155; 
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            margin: 0; 
+            overflow-x: hidden;
+        }
+
+        /* Modern Global Navigation */
+        .global-nav { 
+            background: rgba(15, 23, 42, 0.9); 
+            backdrop-filter: blur(10px); 
+            padding: 1.5rem; 
+            display: flex; 
+            justify-content: center; 
+            gap: 3rem; 
+            border-bottom: 1px solid var(--accent); 
+            position: sticky; 
+            top: 0; 
+            z-index: 1000; 
+        }
+
+        .global-nav a { 
+            text-decoration: none; 
+            color: var(--text-muted); 
+            font-weight: 600; 
+            transition: 0.3s; 
+            font-size: 14px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+        }
+
+        .global-nav a:hover { color: var(--brand); }
+
+        /* Services Layout */
+        .hero-section {
+            padding: 80px 20px;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(99, 102, 241, 0.1), transparent);
+        }
+
+        .container { 
+            display: flex; 
+            justify-content: center; 
+            gap: 40px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px; 
+            flex-wrap: wrap;
+        }
+
+        .service-card { 
+            background: var(--card); 
+            padding: 50px 40px; 
+            border-radius: 30px; 
+            width: 320px; 
+            text-align: center; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            cursor: pointer; 
+            text-decoration: none; 
+            color: inherit; 
+            border: 1px solid var(--accent);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(99, 102, 241, 0.05));
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .service-card:hover { 
+            transform: translateY(-15px); 
+            border-color: var(--brand);
+            box-shadow: 0 30px 60px rgba(99, 102, 241, 0.2);
+        }
+
+        .service-card:hover::after { opacity: 1; }
+
+        .icon { 
+            font-size: 60px; 
+            margin-bottom: 25px; 
+            display: block;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+        }
+
+        h2 { 
+            font-size: 1.8rem; 
+            margin-bottom: 15px; 
+            color: var(--text-main); 
+        }
+
+        p { 
+            color: var(--text-muted); 
+            line-height: 1.6; 
+            font-size: 1rem;
+        }
+
+        .btn-hint {
+            display: inline-block;
+            margin-top: 25px;
+            color: var(--brand);
+            font-weight: 700;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="global-nav">
+        <a href="index.html">Home</a>
+        <a href="about.html">About Us</a>
+        <a href="services.html" style="color: var(--brand);">Services</a>
+        <a href="contact.html">Contact Us</a>
+    </nav>
+
+    <div class="hero-section">
+        <h1 style="font-size: 3rem; margin-bottom: 10px;">Portal Selection</h1>
+        <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto;">Access the appropriate module to manage or view academic records for New Horizon College.</p>
+    </div>
+
+    <div class="container">
+        <a href="teachers.html" class="service-card">
+            <span class="icon">👨‍🏫</span>
+            <h2>Teacher Login</h2>
+            <p>Manage daily attendance, curriculum subjects, student marks, and academic schedules for your classes.</p>
+            <span class="btn-hint">Enter Admin Dashboard →</span>
+        </a>
+
+        <a href="student.html" class="service-card">
+            <span class="icon">🎓</span>
+            <h2>Student Portal</h2>
+            <p>Access your personalized attendance records, subject-wise percentage, and detailed academic performance reports.</p>
+            <span class="btn-hint">View My Performance →</span>
+        </a>
+    </div>
+
+</body>
+</html>
