@@ -48,30 +48,7 @@ The server will start on [http://localhost:5000](http://localhost:5000).
 
 ---
 
-## ☁️ Deploying 100% For Free
 
-### 1. Set Up Free MongoDB Atlas
-1. Sign up at [mongodb.com/atlas](https://www.mongodb.com/cloud/atlas) and create an **M0 Free Cluster**.
-2. Under **Security → Database Access**, create a user (e.g., `admin` and a password).
-3. Under **Security → Network Access**, add IP `0.0.0.0/0` (Allow access from anywhere).
-4. Click **Connect** → **Drivers** and copy your URI:
-   `mongodb+srv://<username>:<password>@cluster0.xxxxx.mongodb.net/nexus_db?retryWrites=true&w=majority`
-
-### 2. Push to GitHub
-```bash
-git init
-git add .
-git commit -m "Production release"
-git branch -M main
-git remote add origin https://github.com/<your-username>/<your-repo-name>.git
-git push -u origin main
-```
-
-### 3. Host on Render.com (Free)
-1. Sign in to [render.com](https://render.com) using your GitHub account.
-2. Click **New +** → **Web Service** and choose your repository.
-3. Configure:
-   - **Runtime**: `Node`
    - **Build Command**: `npm install`
    - **Start Command**: `npm start`
    - **Instance Type**: `Free`
