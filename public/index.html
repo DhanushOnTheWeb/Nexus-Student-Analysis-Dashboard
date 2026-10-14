@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus | Student Analytics & Academic Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --brand: #6366f1; 
+            --brand-glow: rgba(99, 102, 241, 0.35);
+            --bg: #0b0f19; 
+            --card: #151d30; 
+            --card-hover: #1c2742;
+            --accent: #2d3b55; 
+            --text-main: #f8fafc; 
+            --text-muted: #94a3b8;
+            --success: #10b981;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main); 
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12), transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.08), transparent 45%);
+        }
+
+        /* Modern Global Navigation */
+        .global-nav { 
+            background: rgba(11, 15, 25, 0.85); 
+            backdrop-filter: blur(16px); 
+            padding: 1.25rem 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.07); 
+            position: sticky; 
+            width: 100%; 
+            top: 0; 
+            z-index: 1000; 
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.35rem;
+            letter-spacing: -0.5px;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-brand span {
+            color: var(--brand);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.2rem;
+            align-items: center;
+        }
+
+        .nav-links a { 
+            text-decoration: none; 
+            color: var(--text-muted); 
+            font-weight: 600; 
+            transition: 0.25s; 
+            font-size: 13.5px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+        }
+
+        .nav-links a:hover, .nav-links a.active { 
+            color: var(--brand); 
+        }
+
+        /* Hero Section */
+        .hero { 
+            min-height: calc(100vh - 80px); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            padding: 40px 20px;
+        }
+
+        .institution-tag {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--brand);
+            padding: 8px 22px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--brand);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--brand);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        h1 { 
+            font-size: clamp(3.2rem, 7vw, 5.5rem); 
+            line-height: 1.08;
+            font-weight: 800; 
+            letter-spacing: -1.5px;
+            background: linear-gradient(135deg, #ffffff 40%, #818cf8 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            max-width: 900px;
+        }
+
+        .hero p { 
+            font-size: clamp(1.05rem, 2vw, 1.25rem); 
+            color: var(--text-muted); 
+            max-width: 680px; 
+            line-height: 1.65; 
+            margin: 25px 0 45px;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-main { 
+            padding: 18px 42px; 
+            background: var(--brand); 
+            color: white; 
+            border-radius: 16px; 
+            text-decoration: none; 
+            font-weight: 700; 
+            font-size: 15px;
+            transition: all 0.3s ease; 
+            box-shadow: 0 12px 28px var(--brand-glow); 
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-secondary {
+            padding: 18px 42px; 
+            background: rgba(255, 255, 255, 0.04); 
+            color: white; 
+            border-radius: 16px; 
+            text-decoration: none; 
+            font-weight: 700; 
+            font-size: 15px;
+            transition: all 0.3s ease; 
+            border: 1px solid var(--accent);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-main:hover { 
+            transform: translateY(-3px); 
+            filter: brightness(1.15); 
+            box-shadow: 0 16px 36px rgba(99, 102, 241, 0.5); 
+        }
+
+        .btn-secondary:hover { 
+            background: rgba(99, 102, 241, 0.12); 
+            border-color: var(--brand); 
+            transform: translateY(-3px);
+        }
+
+        /* Feature Pillars */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1100px;
+            margin: 50px auto 80px;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        .feature-card {
+            background: var(--card);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 32px;
+            border-radius: 20px;
+            transition: 0.3s;
+            text-align: left;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.4);
+            background: var(--card-hover);
+        }
+
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+            display: inline-block;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .global-nav {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .nav-links {
+                gap: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="global-nav">
+        <a href="index.html" class="nav-brand">
+            ⚡ NEXUS<span>.EDU</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html" class="active">Home</a> 
+            <a href="edutrack.html">EduTrack</a>
+            <a href="about.html">About Us</a> 
+            <a href="services.html">Services</a> 
+            <a href="contact.html">Contact Us</a>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="institution-tag">
+            <span class="pulse-dot"></span>
+            Academic Intelligence Portal
+        </div>
+        
+        <h1>Precision Analytics for Higher Learning</h1>
+        <p>The unified academic command center. Live attendance surveillance, granular assessment scoring, and real-time curriculum broadcasting.</p>
+        
+        <div class="cta-group">
+            <a href="student.html" class="btn-main">
+                🎓 Student Gateway
+            </a>
+            <a href="teachers.html" class="btn-secondary">
+                👔 Faculty Command
+            </a>
+            <a href="edutrack.html" class="btn-secondary">
+                📢 Academic Feed
+            </a>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <span class="feature-icon">📊</span>
+                <h3>Real-Time Metrics</h3>
+                <p>Instant attendance tracking with automated 75% threshold monitoring and timeline charts.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h3>Faculty Command</h3>
+                <p>One-click bulk attendance, modular grade entries, and instant curriculum management.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📁</span>
+                <h3>EduTrack Broadcast</h3>
+                <p>Digital noticeboard with file attachments, assignment deadlines, and exam bulletins.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        © 2026 Nexus Student Analytics & Management Platform. Production-Ready Deployment.
+    </footer>
+</body>
+</html>

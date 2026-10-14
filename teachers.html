@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Command Portal | NEXUS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --brand: #6366f1; 
+            --brand-glow: rgba(99, 102, 241, 0.35);
+            --bg: #0b0f19; 
+            --card: #151d30; 
+            --accent: #27354f; 
+            --text: #f8fafc; 
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            min-height: 100vh;
+            background-image: radial-gradient(circle at top right, rgba(99, 102, 241, 0.08), transparent 40%);
+        }
+
+        /* Fixed Navigation */
+        .global-nav {
+            background: rgba(11, 15, 25, 0.9);
+            backdrop-filter: blur(14px);
+            padding: 1.1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 3000;
+        }
+
+        .nav-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-brand span { color: var(--brand); }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 13.5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.25s;
+        }
+
+        .nav-links a:hover { color: var(--brand); }
+
+        /* Login Overlay */
+        #loginOverlay {
+            position: fixed; 
+            inset: 0; 
+            background: var(--bg);
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .login-card { 
+            background: var(--card); 
+            padding: 45px; 
+            border-radius: 28px; 
+            width: 100%;
+            max-width: 420px; 
+            text-align: center; 
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Dashboard Portal */
+        #dashboard { display: none; padding: 30px 20px 80px; }
+
+        .dashboard-header {
+            max-width: 1100px;
+            margin: 0 auto 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .user-badge {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 14px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-logout {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--text-muted);
+            padding: 7px 16px;
+            border-radius: 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-logout:hover {
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .nav-tabs { 
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            margin-bottom: 35px; 
+            flex-wrap: wrap; 
+        }
+
+        .tab-btn { 
+            padding: 12px 24px; 
+            border: 1px solid var(--accent); 
+            background: var(--card); 
+            cursor: pointer; 
+            border-radius: 12px; 
+            color: var(--text-muted); 
+            font-weight: 700; 
+            font-size: 14px; 
+            transition: 0.25s; 
+        }
+
+        .tab-btn.active { 
+            background: var(--brand); 
+            color: white; 
+            border-color: var(--brand);
+            box-shadow: 0 8px 20px var(--brand-glow); 
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; }
+        
+        .section { 
+            display: none; 
+            background: var(--card); 
+            padding: 40px; 
+            border-radius: 24px; 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .section.active { display: block; }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input, select { 
+            width: 100%; 
+            padding: 14px; 
+            margin: 8px 0; 
+            background: #0d1322; 
+            border: 1px solid var(--accent); 
+            border-radius: 12px; 
+            color: white; 
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--brand);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .btn-action { 
+            background: var(--brand); 
+            color: white; 
+            border: none; 
+            padding: 14px 24px; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            font-size: 14px;
+            cursor: pointer; 
+            transition: all 0.25s ease; 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-action:hover { 
+            filter: brightness(1.15); 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 20px var(--brand-glow);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            border: 1px solid var(--accent);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--brand);
+            color: #fff;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+
+        @media (max-width: 850px) {
+            .grid-4 { grid-template-columns: 1fr 1fr; }
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        /* Roster Elements */
+        .roster-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 25px 0 15px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--accent);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .student-row { 
+            display: flex; 
+            justify-content: space-between; 
+            padding: 14px 18px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+            align-items: center; 
+            background: rgba(13, 19, 34, 0.5); 
+            border-radius: 12px; 
+            margin-bottom: 8px; 
+            transition: 0.2s;
+        }
+
+        .student-row:hover { background: rgba(13, 19, 34, 0.9); }
+
+        .student-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .student-tag {
+            font-size: 11px;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        /* Status Pills */
+        .status-pill {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .status-pill.present { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+        .status-pill.absent { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+        .status-pill.pending { background: rgba(148, 163, 184, 0.1); color: var(--text-muted); }
+
+        /* Toast Notifications */
+        #toastContainer {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: #1e293b;
+            color: #fff;
+            padding: 14px 22px;
+            border-radius: 12px;
+            border: 1px solid var(--accent);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+            max-width: 360px;
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="global-nav">
+        <a href="index.html" class="nav-brand">
+            ⚡ NEXUS<span>.FACULTY</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="student.html">Student Portal</a>
+            <a href="edutrack.html">EduTrack</a>
+        </div>
+    </nav>
+
+    <!-- Login Modal -->
+    <div id="loginOverlay">
+        <div class="login-card">
+            <h2 style="font-weight:800; margin-bottom:10px;">Faculty Command</h2>
+            <p style="color:var(--text-muted); font-size:13.5px; margin-bottom:25px;">Enter credentials to unlock institutional gradebook and rosters.</p>
+            <input type="text" id="uid" placeholder="Faculty Unique ID">
+            <input type="password" id="psw" placeholder="Password">
+            <button class="btn-action" style="width:100%; margin-top:10px;" onclick="login()">Initialize Portal</button>
+            <p style="margin-top:20px; font-size:13.5px; color:var(--text-muted);">
+                New Faculty? <a href="register.html" style="color:var(--brand); text-decoration:none; font-weight:700;">Create Account</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard">
+        <div class="dashboard-header">
+            <div class="user-badge">
+                <span>👨‍🏫</span>
+                <span id="facultyNameDisplay">Logged in</span>
+            </div>
+            <button class="btn-logout" onclick="logout()">Sign Out</button>
+        </div>
+
+        <div class="container">
+            <div class="nav-tabs">
+                <button class="tab-btn active" onclick="openTab('attendance', this)">📅 Attendance</button>
+                <button class="tab-btn" onclick="openTab('marks', this)">📝 Academic Marks</button>
+                <button class="tab-btn" onclick="openTab('subjects', this)">📚 Curriculum Modules</button>
+                <button class="tab-btn" onclick="openTab('students', this)">👥 Mass Enrollment</button>
+                <button class="tab-btn" onclick="openTab('edutrack', this)">📢 EduTrack Broadcast</button>
+            </div>
+
+            <!-- ATTENDANCE TAB -->
+            <div id="attendance" class="section active">
+                <h3 class="section-title">📅 Real-Time Attendance Surveillance</h3>
+                <div class="grid-4">
+                    <select id="atD" onchange="syncSubs('at')"><option>BCA</option><option>BBA</option><option>BCOM</option></select>
+                    <select id="atS" onchange="syncSubs('at')"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
+                    <select id="atSec"><option>A</option><option>B</option><option>C</option><option>D</option></select>
+                    <select id="atSub"><option value="">-- Select Module --</option></select>
+                </div>
+                <div class="grid-2" style="margin-top: 10px;">
+                    <input type="date" id="atDate">
+                    <button class="btn-action" onclick="loadAttendanceRoster()">🔍 Load Roster & State</button>
+                </div>
+
+                <div id="atRosterControls" style="display: none; margin-top: 25px;">
+                    <div class="roster-actions">
+                        <div>
+                            <span style="font-weight: 700; color: #fff;">Class Roster</span>
+                            <span id="atCountBadge" style="margin-left: 8px; font-size: 12px; color: var(--text-muted);"></span>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-secondary" onclick="markAllAttendance('present')">✅ All Present</button>
+                            <button class="btn-secondary" onclick="markAllAttendance('absent')">❌ All Absent</button>
+                            <button class="btn-action" style="padding: 10px 20px;" onclick="submitBulkAttendance()">💾 Save Attendance</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="atList" style="margin-top: 15px;"></div>
+            </div>
+
+            <!-- MARKS TAB -->
+            <div id="marks" class="section">
+                <h3 class="section-title">📝 Academic Grading Hub</h3>
+                <div style="background: rgba(0,0,0,0.25); padding: 25px; border-radius: 20px; border: 1px solid var(--accent); margin-bottom: 25px;">
+                    <div class="grid-4">
+                        <select id="mD" onchange="syncSubs('m')"><option>BCA</option><option>BBA</option><option>BCOM</option></select>
+                        <select id="mS" onchange="syncSubs('m')"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
+                        <select id="mSec"><option>A</option><option>B</option><option>C</option><option>D</option></select>
+                        <select id="mSub"><option value="">-- Select Module --</option></select>
+                    </div>
+                    <div class="grid-2" style="margin-top: 10px;">
+                        <select id="mType"><option>Class Test 1</option><option>Class Test 2</option><option>Exam</option></select>
+                        <input id="mTitle" placeholder="Assessment Title (e.g., Unit 1 Midterm)">
+                    </div>
+                    <button class="btn-action" style="margin-top: 15px; width: 100%;" onclick="loadMarksRoster()">Initialize Grading Roster</button>
+                </div>
+
+                <div id="mRosterControls" style="display: none; margin-bottom: 15px;">
+                    <div class="roster-actions">
+                        <span style="font-weight: 700;">Student Evaluation Scores</span>
+                        <button class="btn-action" style="padding: 10px 20px;" onclick="submitBulkMarks()">💾 Save All Scores</button>
+                    </div>
+                </div>
+                <div id="mList"></div>
+            </div>
+
+            <!-- SUBJECTS TAB -->
+            <div id="subjects" class="section">
+                <h3 class="section-title">📚 Curriculum Management</h3>
+                <div class="grid-2">
+                    <div style="background: rgba(99, 102, 241, 0.05); padding: 30px; border-radius: 20px; border: 1px solid var(--brand);">
+                        <h4 style="margin-top: 0; color: var(--brand); margin-bottom: 15px;">➕ Register New Module</h4>
+                        <select id="sDegA"><option>BCA</option><option>BBA</option><option>BCOM</option></select>
+                        <select id="sSemA"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
+                        <input id="sNameA" placeholder="Module Name (e.g. Data Structures)">
+                        <button class="btn-action" style="margin-top: 15px; width: 100%;" onclick="addSubject()">Commit Module</button>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.25); padding: 30px; border-radius: 20px; border: 1px solid var(--accent);">
+                        <h4 style="margin-top: 0; margin-bottom: 15px;">📋 Active Modules</h4>
+                        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                            <select id="sDegV" onchange="loadSubs()"><option>BCA</option><option>BBA</option><option>BCOM</option></select>
+                            <select id="sSemV" onchange="loadSubs()"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
+                        </div>
+                        <div id="subList" style="max-height: 350px; overflow-y: auto;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MASS ENROLLMENT TAB -->
+            <div id="students" class="section">
+                <h3 class="section-title">👥 Mass Student Enrollment</h3>
+                <div style="background: rgba(0,0,0,0.25); padding: 35px; border-radius: 24px; border: 1px solid var(--accent); max-width: 600px; margin: 0 auto; text-align: center;">
+                    <span style="font-size: 50px; display: block; margin-bottom: 15px;">📂</span>
+                    <h4 style="font-size: 1.25rem; margin-bottom: 10px;">Upload Student Roster CSV</h4>
+                    <p style="color: var(--text-muted); font-size: 13.5px; margin-bottom: 20px; line-height: 1.6;">
+                        CSV Headers required: <code>name, uniqueId, degree, semester, section</code><br>
+                        Default student login password will be set automatically to <code>password123</code>.
+                    </p>
+                    <input type="file" id="csvFileInput" accept=".csv" style="padding: 12px; margin-bottom: 15px;">
+                    <div style="display: flex; gap: 12px; justify-content: center;">
+                        <button class="btn-action" onclick="uploadCSV()">Process CSV Import</button>
+                        <button class="btn-secondary" onclick="downloadSampleCSV()">📥 Download Template</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDUTRACK TAB -->
+            <div id="edutrack" class="section">
+                <h3 class="section-title">📢 Academic Notice & Material Broadcast</h3>
+                <div style="max-width: 700px; margin: 0 auto;">
+                    <select id="eType" onchange="toggleEduFields()">
+                        <option>Assignment</option>
+                        <option>Exam</option>
+                        <option>Class Test</option>
+                        <option>Holiday</option>
+                    </select>
+                    <div class="grid-2">
+                        <select id="eD" onchange="syncSubs('e')"><option>BCA</option><option>BBA</option><option>BCOM</option></select>
+                        <select id="eS" onchange="syncSubs('e')"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select>
+                    </div>
+                    <div id="eSubField"><select id="eSub"><option value="">-- Select Module --</option></select></div>
+                    <input id="eTitle" placeholder="Post Title (e.g., Assignment 1: Binary Search Trees)">
+                    <div id="eDueDateField">
+                        <label style="font-size: 12px; color: var(--text-muted);">Submission Due Date:</label>
+                        <input type="date" id="eDueDate">
+                    </div>
+                    <label style="font-size: 12px; color: var(--text-muted); display: block; margin-top: 10px;">Reference Attachment (PDF/DOCX/IMG):</label>
+                    <input type="file" id="eFile">
+                    <button class="btn-action" style="margin-top: 20px; width: 100%;" onclick="publishEdu()">Transmit Broadcast</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer"></div>
+
+    <script>
+        // --- TOAST SYSTEM ---
+        function toast(msg, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.innerHTML = `<span>${type === 'success' ? '✅' : '⚠️'}</span><span>${msg}</span>`;
+            container.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            }, 3500);
+        }
+
+        // --- SESSION MANAGEMENT ---
+        function checkSession() {
+            const userStr = localStorage.getItem('nexus_teacher');
+            if (userStr) {
+                try {
+                    const user = JSON.parse(userStr);
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    document.getElementById('facultyNameDisplay').textContent = `${user.name} (${user.uniqueId})`;
+                    syncSubs('at');
+                } catch (e) {
+                    localStorage.removeItem('nexus_teacher');
+                }
+            }
+        }
+
+        async function login() {
+            const uid = document.getElementById('uid').value.trim();
+            const psw = document.getElementById('psw').value;
+            if (!uid || !psw) return toast("Provide ID and password.", "error");
+
+            try {
+                const res = await fetch('/login', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({ uniqueId: uid, password: psw }) 
+                });
+                const data = await res.json();
+                if(res.ok && data.role === 'teacher') {
+                    localStorage.setItem('nexus_teacher', JSON.stringify(data));
+                    document.getElementById('loginOverlay').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    document.getElementById('facultyNameDisplay').textContent = `${data.name} (${data.uniqueId})`;
+                    toast("Authenticated successfully.");
+                    syncSubs('at');
+                } else {
+                    toast(data.error || "Invalid Credentials / Not Faculty Account", "error");
+                }
+            } catch (err) {
+                toast("Server connection failed.", "error");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('nexus_teacher');
+            location.reload();
+        }
+
+        // --- TABS & NAVIGATION ---
+        function openTab(id, btn) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active'); 
+            btn.classList.add('active');
+            
+            if(id === 'attendance') syncSubs('at');
+            if(id === 'marks') syncSubs('m');
+            if(id === 'edutrack') { syncSubs('e'); toggleEduFields(); }
+            if(id === 'subjects') loadSubs();
+        }
+
+        async function syncSubs(p) {
+            const deg = document.getElementById(p === 'e' ? 'eD' : p + 'D').value;
+            const sem = document.getElementById(p === 'e' ? 'eS' : p + 'S').value;
+            try {
+                const res = await fetch(`/api/subjects?degree=${deg}&semester=${sem}`);
+                const data = await res.json();
+                const d = document.getElementById(p + 'Sub');
+                d.innerHTML = '<option value="">-- Select Module --</option>';
+                data.forEach(s => d.innerHTML += `<option value="${s.name}">${s.name}</option>`);
+            } catch (e) {
+                toast("Failed to synchronize curriculum modules.", "error");
+            }
+        }
+
+        function toggleEduFields() {
+            const type = document.getElementById('eType').value;
+            document.getElementById('eSubField').style.display = (type === 'Holiday' || type === 'Exam') ? 'none' : 'block';
+            document.getElementById('eDueDateField').style.display = (type === 'Assignment') ? 'block' : 'none';
+        }
+
+        // Initialize today's date
+        document.getElementById('atDate').value = new Date().toISOString().split('T')[0];
+
+        // --- ATTENDANCE SYSTEM ---
+        let currentRoster = [];
+
+        async function loadAttendanceRoster() {
+            const deg = document.getElementById('atD').value;
+            const sem = document.getElementById('atS').value;
+            const sec = document.getElementById('atSec').value;
+            const sub = document.getElementById('atSub').value;
+            const date = document.getElementById('atDate').value;
+
+            if (!sub) return toast("Please select a module.", "error");
+            if (!date) return toast("Please select a date.", "error");
+
+            try {
+                const res = await fetch(`/api/attendance/roster?degree=${deg}&semester=${sem}&section=${sec}&subjectName=${encodeURIComponent(sub)}&date=${date}`);
+                currentRoster = await res.json();
+                
+                const list = document.getElementById('atList'); 
+                list.innerHTML = '';
+                document.getElementById('atRosterControls').style.display = currentRoster.length ? 'block' : 'none';
+                document.getElementById('atCountBadge').textContent = `(${currentRoster.length} Students)`;
+
+                if(currentRoster.length === 0) {
+                    list.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:30px;">No students enrolled in this section.</p>';
+                    return;
+                }
+
+                currentRoster.forEach(s => {
+                    const status = s.status || 'pending';
+                    list.innerHTML += `
+                        <div class="student-row" id="row-${s._id}">
+                            <div class="student-meta">
+                                <span style="font-weight:700;">${s.name}</span>
+                                <span class="student-tag">${s.uniqueId}</span>
+                            </div>
+                            <div id="controls-${s._id}" style="display:flex; align-items:center; gap:8px;">
+                                <span id="pill-${s._id}" class="status-pill ${status}">${status}</span>
+                                <button onclick="setRosterStatus('${s._id}', 'present')" style="background:#10b981; color:white; border:none; padding:7px 14px; border-radius:8px; cursor:pointer; font-weight:700;">P</button> 
+                                <button onclick="setRosterStatus('${s._id}', 'absent')" style="background:#ef4444; color:white; border:none; padding:7px 14px; border-radius:8px; cursor:pointer; font-weight:700;">A</button>
+                                <button onclick="deleteAt('${s._id}')" style="background:transparent; color:#94a3b8; border:1px solid var(--accent); padding:7px 12px; border-radius:8px; cursor:pointer; font-size:12px;">Delete</button>
+                            </div>
+                        </div>`;
+                });
+            } catch (err) {
+                toast("Error loading attendance roster.", "error");
+            }
+        }
+
+        function setRosterStatus(studentId, status) {
+            const student = currentRoster.find(s => s._id === studentId);
+            if (student) student.status = status;
+            const pill = document.getElementById(`pill-${studentId}`);
+            if (pill) {
+                pill.className = `status-pill ${status}`;
+                pill.textContent = status;
+            }
+        }
+
+        function markAllAttendance(status) {
+            currentRoster.forEach(s => {
+                s.status = status;
+                const pill = document.getElementById(`pill-${s._id}`);
+                if (pill) {
+                    pill.className = `status-pill ${status}`;
+                    pill.textContent = status;
+                }
+            });
+            toast(`All set to ${status}. Remember to click 'Save Attendance'.`);
+        }
+
+        async function submitBulkAttendance() {
+            const sub = document.getElementById('atSub').value;
+            const date = document.getElementById('atDate').value;
+            const marked = currentRoster.filter(s => s.status === 'present' || s.status === 'absent');
+            
+            if (marked.length === 0) return toast("No attendance marked.", "error");
+
+            const records = marked.map(s => ({
+                studentId: s._id,
+                subjectName: sub,
+                status: s.status,
+                date: date
+            }));
+
+            try {
+                const res = await fetch('/api/attendance/bulk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ records })
+                });
+                if (res.ok) {
+                    toast(`Successfully saved attendance for ${records.length} students.`);
+                } else {
+                    toast("Failed to commit attendance.", "error");
+                }
+            } catch (e) {
+                toast("Server error saving attendance.", "error");
+            }
+        }
+
+        async function deleteAt(sid) {
+            const sub = document.getElementById('atSub').value;
+            const date = document.getElementById('atDate').value;
+            try {
+                const res = await fetch('/api/attendance', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ studentId: sid, subjectName: sub, date: date })
+                });
+                if(res.ok) {
+                    setRosterStatus(sid, 'pending');
+                    toast("Record purged.");
+                }
+            } catch (e) {
+                toast("Error purging record.", "error");
+            }
+        }
+
+        // --- ACADEMIC MARKS SYSTEM ---
+        let currentMarksStudents = [];
+
+        async function loadMarksRoster() {
+            const deg = document.getElementById('mD').value;
+            const sem = document.getElementById('mS').value;
+            const sec = document.getElementById('mSec').value;
+            const sub = document.getElementById('mSub').value;
+
+            if (!sub) return toast("Please select a module.", "error");
+
+            try {
+                const res = await fetch(`/students?degree=${deg}&semester=${sem}&section=${sec}`);
+                currentMarksStudents = await res.json();
+                const list = document.getElementById('mList');
+                list.innerHTML = '';
+                document.getElementById('mRosterControls').style.display = currentMarksStudents.length ? 'block' : 'none';
+
+                if(currentMarksStudents.length === 0) {
+                    list.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:30px;">No students found.</p>';
+                    return;
+                }
+
+                currentMarksStudents.forEach(s => {
+                    list.innerHTML += `
+                        <div class="student-row">
+                            <div class="student-meta">
+                                <span style="font-weight:700;">${s.name}</span>
+                                <span class="student-tag">${s.uniqueId}</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <input id="m-${s._id}" type="number" min="0" max="100" style="width:85px; margin:0; text-align:center;" placeholder="Marks">
+                                <button class="btn-action" style="padding:8px 16px;" onclick="saveSingleMark('${s._id}')">Save</button>
+                            </div>
+                        </div>`;
+                });
+            } catch (err) {
+                toast("Error loading students.", "error");
+            }
+        }
+
+        async function saveSingleMark(sid) {
+            const sub = document.getElementById('mSub').value;
+            const type = document.getElementById('mType').value;
+            const title = document.getElementById('mTitle').value || type;
+            const val = document.getElementById('m-' + sid).value;
+
+            if (val === '') return toast("Enter score first.", "error");
+
+            try {
+                const res = await fetch('/api/marks', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        studentId: sid,
+                        subjectName: sub,
+                        assessmentType: type,
+                        assessmentTitle: title,
+                        marksObtained: val
+                    })
+                });
+                if(res.ok) toast("Score saved.");
+                else toast("Failed to save score.", "error");
+            } catch (e) {
+                toast("Server error.", "error");
+            }
+        }
+
+        async function submitBulkMarks() {
+            const sub = document.getElementById('mSub').value;
+            const type = document.getElementById('mType').value;
+            const title = document.getElementById('mTitle').value || type;
+
+            const records = [];
+            currentMarksStudents.forEach(s => {
+                const input = document.getElementById('m-' + s._id);
+                if (input && input.value !== '') {
+                    records.push({
+                        studentId: s._id,
+                        subjectName: sub,
+                        assessmentType: type,
+                        assessmentTitle: title,
+                        marksObtained: input.value
+                    });
+                }
+            });
+
+            if (records.length === 0) return toast("No marks entered.", "error");
+
+            try {
+                const res = await fetch('/api/marks/bulk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ records })
+                });
+                if (res.ok) toast(`Successfully saved ${records.length} scores.`);
+                else toast("Bulk score commit failed.", "error");
+            } catch (e) {
+                toast("Network error saving marks.", "error");
+            }
+        }
+
+        // --- CURRICULUM MODULES ---
+        async function addSubject() {
+            const name = document.getElementById('sNameA').value.trim();
+            const deg = document.getElementById('sDegA').value;
+            const sem = document.getElementById('sSemA').value;
+            if(!name) return toast("Enter module name.", "error");
+
+            try {
+                const res = await fetch('/api/subjects', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ name, degree: deg, semester: sem })
+                });
+                const data = await res.json();
+                if(res.ok) {
+                    toast(data.message || "Module added.");
+                    document.getElementById('sNameA').value = '';
+                    loadSubs();
+                } else toast(data.error, "error");
+            } catch (e) {
+                toast("Failed to register module.", "error");
+            }
+        }
+
+        async function loadSubs() {
+            const deg = document.getElementById('sDegV').value;
+            const sem = document.getElementById('sSemV').value;
+            try {
+                const res = await fetch(`/api/subjects?degree=${deg}&semester=${sem}`);
+                const data = await res.json();
+                const list = document.getElementById('subList');
+                list.innerHTML = '';
+                if(data.length === 0) {
+                    list.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:20px;">No modules found.</p>';
+                    return;
+                }
+                data.forEach(s => {
+                    list.innerHTML += `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding:14px; background:rgba(13,19,34,0.6); border:1px solid var(--accent); border-radius:12px; margin-bottom:8px;">
+                            <div>
+                                <span style="font-weight:700; color:#fff;">${s.name}</span>
+                                <small style="display:block; color:var(--text-muted); font-size:11px;">${s.degree} Sem ${s.semester}</small>
+                            </div>
+                            <button onclick="delSub('${s._id}')" style="color:var(--danger); border:1px solid rgba(239,68,68,0.3); background:rgba(239,68,68,0.08); padding:5px 12px; border-radius:8px; cursor:pointer; font-size:11px; font-weight:700;">REMOVE</button>
+                        </div>`;
+                });
+            } catch (e) {
+                toast("Error fetching modules.", "error");
+            }
+        }
+
+        async function delSub(id) {
+            if(!confirm("Remove module?")) return;
+            try {
+                await fetch(`/api/subjects/${id}`, { method: 'DELETE' });
+                toast("Module removed.");
+                loadSubs();
+            } catch (e) {
+                toast("Failed to remove.", "error");
+            }
+        }
+
+        // --- MASS ENROLLMENT ---
+        async function uploadCSV() {
+            const fileInput = document.getElementById('csvFileInput');
+            if(!fileInput.files[0]) return toast("Select a CSV file first.", "error");
+
+            const teacher = JSON.parse(localStorage.getItem('nexus_teacher') || '{}');
+            const fd = new FormData();
+            fd.append('file', fileInput.files[0]);
+            fd.append('uniqueId', teacher.uniqueId);
+
+            // Ask password once securely in session or prompt if not stored
+            const psw = prompt("Confirm your faculty password for authorization:");
+            if (!psw) return;
+            fd.append('password', psw);
+
+            try {
+                toast("Processing CSV upload...");
+                const res = await fetch('/import-students', {
+                    method: 'POST',
+                    body: fd
+                });
+                const result = await res.json();
+                if(res.ok) {
+                    toast(result.message);
+                    fileInput.value = '';
+                } else {
+                    toast(result.error || "Import failed.", "error");
+                }
+            } catch (e) {
+                toast("Upload failed.", "error");
+            }
+        }
+
+        function downloadSampleCSV() {
+            const csvContent = "data:text/csv;charset=utf-8,name,uniqueId,degree,semester,section\nJohn Doe,BCA2026001,BCA,1,A\nJane Smith,BCA2026002,BCA,1,A\nAlex Brown,BBA2026001,BBA,1,B";
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "student_enrollment_sample.csv");
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
+        // --- EDUTRACK BROADCAST ---
+        async function publishEdu() {
+            const type = document.getElementById('eType').value;
+            const title = document.getElementById('eTitle').value.trim();
+            const deg = document.getElementById('eD').value;
+            const sem = document.getElementById('eS').value;
+            const sub = document.getElementById('eSub').value;
+            const dueDate = document.getElementById('eDueDate').value;
+            const file = document.getElementById('eFile').files[0];
+
+            if(!title) return toast("Broadcast title is required.", "error");
+
+            const fd = new FormData();
+            fd.append('type', type);
+            fd.append('title', title);
+            fd.append('degree', deg);
+            fd.append('semester', sem);
+            fd.append('subject', sub);
+            if(dueDate) fd.append('submissionDate', dueDate);
+            if(file) fd.append('file', file);
+
+            try {
+                const res = await fetch('/api/edutrack', { method: 'POST', body: fd });
+                const data = await res.json();
+                if(res.ok) {
+                    toast("Broadcast transmitted successfully!");
+                    document.getElementById('eTitle').value = '';
+                    document.getElementById('eFile').value = '';
+                } else {
+                    toast(data.error || "Broadcast failed.", "error");
+                }
+            } catch (e) {
+                toast("Error publishing broadcast.", "error");
+            }
+        }
+
+        // Initialize on load
+        checkSession();
+    </script>
+</body>
+</html>
