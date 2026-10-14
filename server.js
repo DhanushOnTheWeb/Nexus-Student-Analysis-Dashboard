@@ -521,6 +521,17 @@ app.get('/api/student-marks/:uId', async (req, res) => {
   }
 });
 
+// --- HTML PAGE ROUTES FOR VERCEL & LOCAL ---
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+const pages = ['index', 'teachers', 'student', 'edutrack', 'register', 'import', 'about', 'services', 'contact'];
+pages.forEach(page => {
+  app.get(`/${page}.html`, (req, res) => res.sendFile(path.join(__dirname, `${page}.html`)));
+  app.get(`/${page}`, (req, res) => res.sendFile(path.join(__dirname, `${page}.html`)));
+});
+
 // --- 6. SERVER INITIALIZATION & EXPORT ---
 // When deployed on Vercel, app is executed as a serverless function, so we export app
 if (!isVercel) {
