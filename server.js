@@ -64,11 +64,23 @@ const connectDB = async () => {
 
 // Ensure database connection is ready for every request
 app.use(async (req, res, next) => {
+  if (req.path === '/health') return next();
   try {
     await connectDB();
     next();
   } catch (err) {
-    res.status(503).json({ error: 'Database unavailable. Verify MONGODB_URI in environment variables.' });
+    const isMissingEnv = !process.env.MONGODB_URI;
+    res.status(503).json({ 
+      error: 'Database connection failed.',
+      reason: isMissingEnv 
+        ? 'MONGODB_URI environment variable is not set in Vercel.' 
+        : err.message,
+      checklist: [
+        '1. Added MONGODB_URI in Vercel -> Settings -> Environment Variables?',
+        '2. Added 0.0.0.0/0 (Allow from anywhere) in MongoDB Atlas -> Network Access?',
+        '3. Did you click Redeploy in Vercel Deployments tab after saving the variable?'
+      ]
+    });
   }
 });
 
