@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/login", "destination": "/api" },
+    { "source": "/register", "destination": "/api" },
+    { "source": "/students", "destination": "/api" },
+    { "source": "/import-students", "destination": "/api" },
+    { "source": "/attendance/(.*)", "destination": "/api" },
+    { "source": "/health", "destination": "/api" }
+  ]
+}

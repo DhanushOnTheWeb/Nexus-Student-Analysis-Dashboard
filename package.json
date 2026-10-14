@@ -1,0 +1,19 @@
+{
+  "name": "nexus-student-analytics",
+  "version": "1.0.0",
+  "description": "Unified Student Analytics Dashboard & Faculty Command Portal",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "csv-parser": "^3.2.1",
+    "dotenv": "^18.0.7",
+    "express": "^5.2.1",
+    "mongoose": "^9.6.1",
+    "multer": "^2.1.1"
+  }
+}
